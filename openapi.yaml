@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Artifact Hub
   description: "Find, install and publish Kubernetes packages"
-  version: 1.2.0
+  version: 1.14.0
   contact:
     name: Artifact Hub support
     url: https://cloud-native.slack.com/channels/artifact-hub
@@ -604,9 +604,6 @@ paths:
     get:
       tags:
         - Repositories
-      security:
-        - ApiKeyId: []
-          ApiKeySecret: []
       summary: Search repositories that meet the provided criteria
       description: Search repositories that meet the provided criteria
       operationId: searchRepositories
@@ -617,6 +614,7 @@ paths:
         - $ref: "#/components/parameters/UsersListParam"
         - $ref: "#/components/parameters/OrgsListParam"
         - $ref: "#/components/parameters/RepoNameQueryParam"
+        - $ref: "#/components/parameters/UrlQueryParam"
       responses:
         "200":
           description: ""
@@ -942,8 +940,8 @@ paths:
         - $ref: "#/components/parameters/LimitParam"
         - $ref: "#/components/parameters/FacetsParam"
         - $ref: "#/components/parameters/TSQueryWebParam"
-        - $ref: "#/components/parameters/TSQueryParam"
         - $ref: "#/components/parameters/RepositoryKindsListParam"
+        - $ref: "#/components/parameters/PackageCategoryListParam"
         - $ref: "#/components/parameters/UsersListParam"
         - $ref: "#/components/parameters/OrgsListParam"
         - $ref: "#/components/parameters/RepositoriesListParam"
@@ -953,6 +951,7 @@ paths:
         - $ref: "#/components/parameters/OperatorsParam"
         - $ref: "#/components/parameters/VerifiedPublisherParam"
         - $ref: "#/components/parameters/OfficialParam"
+        - $ref: "#/components/parameters/CNCFParam"
         - $ref: "#/components/parameters/SortParam"
       responses:
         "200":
@@ -1010,6 +1009,7 @@ paths:
                         normalized_name: sentry-kubernetes
                         logo_image_id: 55f2ed75-015d-4edd-9990-11fb2ffcae9e
                         stars: 0
+                        category: 4
                         description: A Helm chart for sentry-kubernetes
                         version: 0.2.3
                         app_version: latest
@@ -1031,6 +1031,7 @@ paths:
                         normalized_name: etcd-operator
                         logo_image_id: 5gt2ed75-015d-40dd-9990-11fb2tgcae9e
                         stars: 0
+                        category: 2
                         description: CoreOS etcd-operator Helm chart for Kubernetes
                         version: 0.10.3
                         app_version: 0.9.4
@@ -1110,6 +1111,75 @@ paths:
                   $ref: "#/components/schemas/PackageSummary"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  "/packages/argo-template/{repoName}/{packageName}":
+    get:
+      tags:
+        - Packages
+      summary: Get package details
+      description: Get package details
+      operationId: getArgoTemplatesDetails
+      parameters:
+        - $ref: "#/components/parameters/RepoNameParam"
+        - $ref: "#/components/parameters/PackageNameParam"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArgoTemplate"
+        "404":
+          $ref: "#/components/responses/NotFoundResponse"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  "/packages/backstage/{repoName}/{packageName}":
+    get:
+      tags:
+        - Packages
+      summary: Get package details
+      description: Get package details
+      operationId: getBackstagePluginsDetails
+      parameters:
+        - $ref: "#/components/parameters/RepoNameParam"
+        - $ref: "#/components/parameters/PackageNameParam"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BackstagePlugin"
+        "404":
+          $ref: "#/components/responses/NotFoundResponse"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  "/packages/container/{repoName}/{packageName}":
+    get:
+      tags:
+        - Packages
+      summary: Get container image details
+      description: Get container image details
+      operationId: getContainerImageDetails
+      parameters:
+        - $ref: "#/components/parameters/RepoNameParam"
+        - $ref: "#/components/parameters/PackageNameParam"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContainerImage"
+        "404":
+          $ref: "#/components/responses/NotFoundResponse"
         "429":
           $ref: "#/components/responses/TooManyRequests"
         "500":
@@ -1206,6 +1276,29 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  "/packages/gatekeeper/{repoName}/{packageName}":
+    get:
+      tags:
+        - Packages
+      summary: Get package details
+      description: Get package details
+      operationId: getGatekeeperPoliciesDetails
+      parameters:
+        - $ref: "#/components/parameters/RepoNameParam"
+        - $ref: "#/components/parameters/PackageNameParam"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GatekeeperPolicy"
+        "404":
+          $ref: "#/components/responses/NotFoundResponse"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   "/packages/keda-scaler/{repoName}/{packageName}":
     get:
       tags:
@@ -1252,6 +1345,29 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  "/packages/knative-client-plugin/{repoName}/{packageName}":
+    get:
+      tags:
+        - Packages
+      summary: Get package details
+      description: Get package details
+      operationId: getKnativeClientPluginIntegrationsDetails
+      parameters:
+        - $ref: "#/components/parameters/RepoNameParam"
+        - $ref: "#/components/parameters/PackageNameParam"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KnativeClientPluginsPackage"
+        "404":
+          $ref: "#/components/responses/NotFoundResponse"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   "/packages/krew/{repoName}/{packageName}":
     get:
       tags:
@@ -1269,6 +1385,75 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/KrewPluginsPackage"
+        "404":
+          $ref: "#/components/responses/NotFoundResponse"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  "/packages/kubearmor/{repoName}/{packageName}":
+    get:
+      tags:
+        - Packages
+      summary: Get package details
+      description: Get package details
+      operationId: getKubeArmorPoliciesDetails
+      parameters:
+        - $ref: "#/components/parameters/RepoNameParam"
+        - $ref: "#/components/parameters/PackageNameParam"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KubeArmorPoliciesPackage"
+        "404":
+          $ref: "#/components/responses/NotFoundResponse"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  "/packages/kubewarden/{repoName}/{packageName}":
+    get:
+      tags:
+        - Packages
+      summary: Get package details
+      description: Get package details
+      operationId: getKubewardenPoliciesDetails
+      parameters:
+        - $ref: "#/components/parameters/RepoNameParam"
+        - $ref: "#/components/parameters/PackageNameParam"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KubewardenPoliciesPackage"
+        "404":
+          $ref: "#/components/responses/NotFoundResponse"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  "/packages/kyverno/{repoName}/{packageName}":
+    get:
+      tags:
+        - Packages
+      summary: Get package details
+      description: Get package details
+      operationId: getKyvernoPoliciesDetails
+      parameters:
+        - $ref: "#/components/parameters/RepoNameParam"
+        - $ref: "#/components/parameters/PackageNameParam"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KyvernoPolicy"
         "404":
           $ref: "#/components/responses/NotFoundResponse"
         "429":
@@ -1390,6 +1575,78 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  "/packages/argo-template/{repoName}/{packageName}/{version}":
+    get:
+      tags:
+        - Packages
+      summary: Get package version details
+      description: Get package version details
+      operationId: getArgoTemplatesVersionDetails
+      parameters:
+        - $ref: "#/components/parameters/RepoNameParam"
+        - $ref: "#/components/parameters/PackageNameParam"
+        - $ref: "#/components/parameters/VersionParam"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArgoTemplate"
+        "404":
+          $ref: "#/components/responses/NotFoundResponse"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  "/packages/backstage/{repoName}/{packageName}/{version}":
+    get:
+      tags:
+        - Packages
+      summary: Get package version details
+      description: Get package version details
+      operationId: getBackstagePluginsVersionDetails
+      parameters:
+        - $ref: "#/components/parameters/RepoNameParam"
+        - $ref: "#/components/parameters/PackageNameParam"
+        - $ref: "#/components/parameters/VersionParam"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BackstagePlugin"
+        "404":
+          $ref: "#/components/responses/NotFoundResponse"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  "/packages/container/{repoName}/{packageName}/{version}":
+    get:
+      tags:
+        - Packages
+      summary: Get container image details
+      description: Get container image details
+      operationId: getContainerImageVersionDetails
+      parameters:
+        - $ref: "#/components/parameters/RepoNameParam"
+        - $ref: "#/components/parameters/PackageNameParam"
+        - $ref: "#/components/parameters/VersionParam"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContainerImage"
+        "404":
+          $ref: "#/components/responses/NotFoundResponse"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   "/packages/coredns/{repoName}/{packageName}/{version}":
     get:
       tags:
@@ -1408,6 +1665,54 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CoreDNSPackage"
+        "404":
+          $ref: "#/components/responses/NotFoundResponse"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  "/packages/falco/{repoName}/{packageName}/{version}":
+    get:
+      tags:
+        - Packages
+      summary: Get package version details
+      description: Get package version details
+      operationId: getFalcoRulesVersionDetails
+      parameters:
+        - $ref: "#/components/parameters/RepoNameParam"
+        - $ref: "#/components/parameters/PackageNameParam"
+        - $ref: "#/components/parameters/VersionParam"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FalcoPackage"
+        "404":
+          $ref: "#/components/responses/NotFoundResponse"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  "/packages/gatekeeper/{repoName}/{packageName}/{version}":
+    get:
+      tags:
+        - Packages
+      summary: Get package version details
+      description: Get package version details
+      operationId: getGatekeeperPoliciesVersionDetails
+      parameters:
+        - $ref: "#/components/parameters/RepoNameParam"
+        - $ref: "#/components/parameters/PackageNameParam"
+        - $ref: "#/components/parameters/VersionParam"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GatekeeperPolicy"
         "404":
           $ref: "#/components/responses/NotFoundResponse"
         "429":
@@ -1462,30 +1767,6 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  "/packages/falco/{repoName}/{packageName}/{version}":
-    get:
-      tags:
-        - Packages
-      summary: Get package version details
-      description: Get package version details
-      operationId: getFalcoRulesVersionDetails
-      parameters:
-        - $ref: "#/components/parameters/RepoNameParam"
-        - $ref: "#/components/parameters/PackageNameParam"
-        - $ref: "#/components/parameters/VersionParam"
-      responses:
-        "200":
-          description: ""
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FalcoPackage"
-        "404":
-          $ref: "#/components/responses/NotFoundResponse"
-        "429":
-          $ref: "#/components/responses/TooManyRequests"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
   "/packages/keda-scaler/{repoName}/{packageName}/{version}":
     get:
       tags:
@@ -1534,6 +1815,30 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  "/packages/knative-client-plugin/{repoName}/{packageName}/{version}":
+    get:
+      tags:
+        - Packages
+      summary: Get package version details
+      description: Get package version details
+      operationId: getKnativeClientPluginsVersionDetails
+      parameters:
+        - $ref: "#/components/parameters/RepoNameParam"
+        - $ref: "#/components/parameters/PackageNameParam"
+        - $ref: "#/components/parameters/VersionParam"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KnativeClientPluginsPackage"
+        "404":
+          $ref: "#/components/responses/NotFoundResponse"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   "/packages/krew/{repoName}/{packageName}/{version}":
     get:
       tags:
@@ -1552,6 +1857,78 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/KrewPluginsPackage"
+        "404":
+          $ref: "#/components/responses/NotFoundResponse"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  "/packages/kubearmor/{repoName}/{packageName}/{version}":
+    get:
+      tags:
+        - Packages
+      summary: Get package version details
+      description: Get package version details
+      operationId: getKubeArmorPoliciesVersionDetails
+      parameters:
+        - $ref: "#/components/parameters/RepoNameParam"
+        - $ref: "#/components/parameters/PackageNameParam"
+        - $ref: "#/components/parameters/VersionParam"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KubeArmorPoliciesPackage"
+        "404":
+          $ref: "#/components/responses/NotFoundResponse"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  "/packages/kubewarden/{repoName}/{packageName}/{version}":
+    get:
+      tags:
+        - Packages
+      summary: Get package version details
+      description: Get package version details
+      operationId: getKubewardenPoliciesVersionDetails
+      parameters:
+        - $ref: "#/components/parameters/RepoNameParam"
+        - $ref: "#/components/parameters/PackageNameParam"
+        - $ref: "#/components/parameters/VersionParam"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KubewardenPoliciesPackage"
+        "404":
+          $ref: "#/components/responses/NotFoundResponse"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  "/packages/kyverno/{repoName}/{packageName}/{version}":
+    get:
+      tags:
+        - Packages
+      summary: Get package version details
+      description: Get package version details
+      operationId: getKyvernoPoliciesVersionDetails
+      parameters:
+        - $ref: "#/components/parameters/RepoNameParam"
+        - $ref: "#/components/parameters/PackageNameParam"
+        - $ref: "#/components/parameters/VersionParam"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KyvernoPolicy"
         "404":
           $ref: "#/components/responses/NotFoundResponse"
         "429":
@@ -1678,6 +2055,129 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  "/packages/{repoKindParam}/{repoName}/{packageName}/changelog.md":
+    get:
+      tags:
+        - Packages
+      summary: Get package's changelog in markdown format
+      description: Get package's changelog in markdown format
+      operationId: generateChangelogMD
+      parameters:
+        - $ref: "#/components/parameters/RepoKindParam"
+        - $ref: "#/components/parameters/RepoNameParam"
+        - $ref: "#/components/parameters/PackageNameParam"
+      responses:
+        "200":
+          description: ""
+          content:
+            text/markdown:
+              schema:
+                type: string
+                example: |
+                  # Changelog
+                  ## 1.3.0 - 2021-10-06
+                  ### Added
+                  - Support for Tekton pipelines
+                  - Versions index to changelog modal
+                  - Allow publishers to include screenshots in packages
+                  - Repository metadata file is now supported in Helm OCI repositories
+                  - Support for provenance files in Helm OCI repositories
+                  - Changes annotation is now available for Krew plugins kind
+                  - Option to show/hide stars in widget
+                  - Link Helm charts dependencies to packages in the hub
+                  - API endpoint for helm-exporter tool
+                  ### Changed
+                  - Improve Helm OCI support (include HIP 6 changes)
+                  - Improve packages search results facets
+                  - Bump Trivy to 0.20.0
+                  - Upgrade backend and frontend dependencies
+                  ### Fixed
+                  - Some bugs and other improvements
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "404":
+          $ref: "#/components/responses/NotFoundResponse"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  "/packages/{repoKindParam}/{repoName}/{packageName}/production-usage":
+    get:
+      tags:
+        - Packages
+      summary: Get a summary of which of the organizations the user belongs to are using the package in production
+      description: Get a summary of which of the organizations the user belongs to are using the package in production
+      operationId: getProductionUsage
+      parameters:
+        - $ref: "#/components/parameters/RepoKindParam"
+        - $ref: "#/components/parameters/RepoNameParam"
+        - $ref: "#/components/parameters/PackageNameParam"
+      responses:
+        "200":
+          description: ""
+          content:
+            text/markdown:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductionUsageOrganization"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "404":
+          $ref: "#/components/responses/NotFoundResponse"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  ? "/packages/{repoKindParam}/{repoName}/{packageName}/production-usage/${orgName}"
+  : post:
+      tags:
+        - Packages
+      security:
+        - ApiKeyId: []
+          ApiKeySecret: []
+      summary: Add organization to package's production users list
+      description: Add organization to package's production users list
+      operationId: addProductionUsage
+      parameters:
+        - $ref: "#/components/parameters/RepoKindParam"
+        - $ref: "#/components/parameters/RepoNameParam"
+        - $ref: "#/components/parameters/PackageNameParam"
+        - $ref: "#/components/parameters/OrgNameParam"
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      tags:
+        - Packages
+      security:
+        - ApiKeyId: []
+          ApiKeySecret: []
+      summary: Delete organization from package's production usage list
+      description: Delete organization from package's production usage list
+      operationId: deleteProductionUsage
+      parameters:
+        - $ref: "#/components/parameters/RepoKindParam"
+        - $ref: "#/components/parameters/RepoNameParam"
+        - $ref: "#/components/parameters/PackageNameParam"
+        - $ref: "#/components/parameters/OrgNameParam"
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   "/packages/{repoKindParam}/{repoName}/{packageName}/summary":
     get:
       tags:
@@ -1772,6 +2272,34 @@ paths:
           $ref: "#/components/responses/NotFoundResponse"
         "429":
           $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  "/packages/{packageID}/{version}/values":
+    get:
+      tags:
+        - Packages
+      summary: Get chart values
+      description: Get chart values
+      operationId: getChartValues
+      parameters:
+        - $ref: "#/components/parameters/PackageIDParam"
+        - $ref: "#/components/parameters/VersionParam"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/yaml:
+              schema:
+                type: string
+                nullable: false
+                example: |
+                  # Values
+                  global:
+                    image: ""
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "404":
+          $ref: "#/components/responses/NotFoundResponse"
         "500":
           $ref: "#/components/responses/InternalServerError"
   "/packages/{packageID}/{version}/values-schema":
@@ -1909,6 +2437,7 @@ paths:
                   values:
                     type: object
                     nullable: false
+                    additionalProperties: true
         "400":
           $ref: "#/components/responses/BadRequest"
         "429":
@@ -1917,6 +2446,38 @@ paths:
           $ref: "#/components/responses/NotFoundResponse"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  "/packages/{packageID}/views":
+    get:
+      tags:
+        - Packages
+      summary: Get the views of the package provided
+      description: Get the views of the package provided
+      operationId: getPackageViews
+      parameters:
+        - $ref: "#/components/parameters/PackageIDParam"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                nullable: false
+                additionalProperties: true
+                example:
+                  "1.0.1":
+                    "2021-12-09": 12
+                    "2021-12-08": 30
+                  "1.0.0":
+                    "2021-12-09": 2
+                    "2021-12-08": 5
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
   /subscriptions:
     get:
       tags:
@@ -2494,6 +3055,13 @@ paths:
                           items:
                             type: integer
                         nullable: false
+                      views_daily:
+                        type: array
+                        items:
+                          type: array
+                          items:
+                            type: integer
+                        nullable: false
                   repositories:
                     type: object
                     required:
@@ -2594,6 +3162,11 @@ paths:
                         - 917
                       - - 1585699200000
                         - 52
+                    views_daily:
+                      - - 1639731010000
+                        - 800
+                      - - 1639644610000
+                        - 820
                   snapshots:
                     total: 3998
                     running_total:
@@ -2800,6 +3373,128 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /nova:
+    get:
+      tags:
+        - Integrations
+      summary: Get Nova dump
+      description: Get all charts listed in Artifact Hub.
+      operationId: getNovaDump
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - name
+                    - latest_version
+                properties:
+                  name:
+                    type: string
+                    nullable: false
+                  description:
+                    type: string
+                  home:
+                    type: string
+                  latest_version:
+                    type: string
+                    nullable: false
+                  links:
+                    type: array
+                    nullable: true
+                    items:
+                      $ref: "#/components/schemas/Link"
+                  logo:
+                    type: string
+                  maintainers:
+                    type: array
+                    nullable: true
+                    items:
+                      type: object
+                      required:
+                        - name
+                      properties:
+                        name:
+                          type: string
+                          nullable: false
+                  official:
+                    type: boolean
+                    nullable: true
+                  repository:
+                    type: object
+                    nullable: false
+                    required:
+                      - name
+                      - url
+                    properties:
+                      name:
+                        type: string
+                        nullable: false
+                      url:
+                        type: string
+                        format: uri
+                        nullable: false
+                      official:
+                        type: boolean
+                        nullable: true
+                      verified:
+                        type: boolean
+                        nullable: true
+                  versions:
+                    type: array
+                    nullable: false
+                    items:
+                      type: object
+                      nullable: false
+                      required:
+                        - pkg
+                        - app
+                      properties:
+                        pkg:
+                          type: string
+                          nullable: false
+                        app:
+                          type: string
+                        deprecated:
+                          type: boolean
+                          nullable: true
+                example:
+                  - name: package1
+                    description: description
+                    home: https://home.url
+                    latest_version: 1.0.0
+                    links:
+                      - name: link1
+                        url: https://link1
+                      - name: link2
+                        url: https://link2
+                    logo: https://logo.url
+                    maintainers:
+                      - name: name1
+                    official: true
+                    repository:
+                      name: repo1
+                      url: https://repo1.com
+                      verified: true
+                    versions:
+                      - pkg: 1.0.0
+                        app: 1.0.0
+                  - name: package2
+                    latest_version: 1.0.0
+                    repository:
+                      name: repo2
+                      url: https://repo2.com
+                    versions:
+                      - pkg: 1.0.0
+                        deprecated: true
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 components:
   securitySchemes:
     ApiKeyId:
@@ -3000,6 +3695,55 @@ components:
             name: user1
             total: 3
             filter_key: user
+    ArgoTemplate:
+      allOf:
+        - $ref: "#/components/schemas/Package"
+        - type: object
+          properties:
+            data:
+              type: object
+              nullable: false
+              properties:
+                template:
+                  type: string
+                  nullable: false
+                  example: >-
+                    apiVersion: argoproj.io/v1alpha1
+                    kind: WorkflowTemplate
+                    metadata:
+                      annotations:
+                        workflows.argoproj.io/description: This is a basic catalog example that simply
+                          prints "hello argo!".
+                        workflows.argoproj.io/maintainer: '@alexec'
+                        workflows.argoproj.io/tags: example
+                        workflows.argoproj.io/version: '>= 2.9.0'
+                      name: hello-world
+                argo/version:
+                  type: string
+                  example: "1.5.0"
+    BackstagePlugin:
+      $ref: "#/components/schemas/Package"
+    ContainerImage:
+      allOf:
+        - $ref: "#/components/schemas/Package"
+        - type: object
+          properties:
+            data:
+              type: object
+              nullable: false
+              properties:
+                platforms:
+                  type: array
+                  items:
+                    type: string
+                    nullable: false
+                    example: darwin/amd64
+                alternative_locations:
+                  type: array
+                  items:
+                    type: string
+                    nullable: false
+                    example: public.ecr.aws/artifacthub/ah
     CoreDNSPackage:
       $ref: "#/components/schemas/Package"
     FalcoPackage:
@@ -3028,6 +3772,64 @@ components:
                     - type: object
                       nullable: false
                       additionalProperties: true
+    GatekeeperPolicy:
+      allOf:
+        - $ref: "#/components/schemas/Package"
+        - type: object
+          properties:
+            relative_path:
+              type: string
+              nullable: false
+              example: /general/allowedrepos
+            data:
+              type: object
+              nullable: false
+              properties:
+                template:
+                  type: string
+                  nullable: false
+                  example: >-
+                    apiVersion: templates.gatekeeper.sh/v1
+                    kind: ConstraintTemplate
+                    metadata:
+                      name: k8sallowedrepos
+                      annotations:
+                        metadata.gatekeeper.sh/title: "Kubernetes Allowed Repositories"
+                        description: >-
+                          Requires container images to begin with a string from the specified list.
+                examples:
+                  type: array
+                  nullable: false
+                  items:
+                    type: object
+                    nullable: false
+                    properties:
+                      name:
+                        type: string
+                        nullable: false
+                      cases:
+                        type: array
+                        nullable: false
+                        items:
+                          type: object
+                          nullable: false
+                          properties:
+                            name:
+                              type: string
+                              nullable: false
+                            path:
+                              type: string
+                              nullable: false
+                            content:
+                              type: string
+                              nullable: false
+                  example:
+                    - name: memory-ratio-only
+                      cases:
+                        - name: constraint
+                          path: samples/container-must-meet-ratio/constraint.yaml
+                          content: >-
+                            apiVersion: constraints.gatekeeper.sh/v1beta1
     HelmPackage:
       allOf:
         - $ref: "#/components/schemas/Package"
@@ -3133,6 +3935,8 @@ components:
                 keptn/kind:
                   type: string
                   example: "service,sli-provider"
+    KnativeClientPluginsPackage:
+      $ref: "#/components/schemas/Package"
     KrewPluginsPackage:
       allOf:
         - $ref: "#/components/schemas/Package"
@@ -3153,6 +3957,75 @@ components:
                   additionalProperties:
                     type: string
                   example: "apiVersion: krew.googlecontainertools.github.com/v1alpha2"
+    KubeArmorPoliciesPackage:
+      allOf:
+        - $ref: "#/components/schemas/Package"
+        - type: object
+          properties:
+            data:
+              type: object
+              nullable: false
+              properties:
+                policies:
+                  type: object
+                  additionalProperties:
+                    type: string
+                  example:
+                    system/ksc-misconfig-service.yaml: |
+                      apiVersion: security.kubearmor.com/v1
+                      kind: KubeArmorPolicy
+    KubewardenPoliciesPackage:
+      allOf:
+        - $ref: "#/components/schemas/Package"
+        - type: object
+          properties:
+            data:
+              type: object
+              nullable: false
+              properties:
+                kubewarden/resources:
+                  type: string
+                  example: "Pod"
+                kubewarden/mutation:
+                  type: string
+                  example: "true"
+    KyvernoPolicy:
+      allOf:
+        - $ref: "#/components/schemas/Package"
+        - type: object
+          properties:
+            relative_path:
+              type: string
+              nullable: false
+              example: /general/allowedrepos
+            data:
+              type: object
+              nullable: false
+              properties:
+                policy:
+                  type: string
+                  nullable: false
+                  example: >-
+                    apiVersion: kyverno.io/v1
+                    kind: ClusterPolicy
+                    metadata:
+                      name: add-certificates-volume
+                      annotations:
+                        policies.kyverno.io/title: Add Certificates as a Volume
+                        policies.kyverno.io/category: Sample
+                        policies.kyverno.io/subject: Pod,Volume
+                kyverno/subject:
+                  type: string
+                  example: "Pod, Volume"
+                kyverno/version:
+                  type: string
+                  example: "1.5.0"
+                kyverno/kubernetesVersion:
+                  type: string
+                  example: "1.21"
+                kyverno/category:
+                  type: string
+                  example: "OpenShift"
     Link:
       type: object
       nullable: false
@@ -3345,6 +4218,16 @@ components:
                       example:
                         - task1
                         - task2
+                examples:
+                  type: object
+                  nullable: false
+                  additionalProperties: true
+                platforms:
+                  type: array
+                  items:
+                    type: string
+                    nullable: false
+                    example: darwin/amd64
     TektonTaskPackage:
       allOf:
         - $ref: "#/components/schemas/Package"
@@ -3361,9 +4244,19 @@ components:
                   additionalProperties:
                     type: string
                   example: "apiVersion: tekton.dev/v1beta1"
+                examples:
+                  type: object
+                  nullable: false
+                  additionalProperties: true
+                platforms:
+                  type: array
+                  items:
+                    type: string
+                    nullable: false
+                    example: darwin/amd64
     Package:
       allOf:
-        - $ref: "#/components/schemas/PackageSummary"
+        - $ref: "#/components/schemas/PackageBase"
         - type: object
           required:
             - repository
@@ -3375,9 +4268,6 @@ components:
             - contains_security_updates
             - prerelease
           properties:
-            signed:
-              type: boolean
-              nullable: false
             repository:
               $ref: "#/components/schemas/RepositorySummary"
             is_operator:
@@ -3393,6 +4283,8 @@ components:
               format: uri
               nullable: false
               example: "http://logo"
+            category:
+              $ref: "#/components/schemas/PackageCategoryId"
             keywords:
               type: array
               nullable: false
@@ -3536,7 +4428,7 @@ components:
                 webhooks:
                   type: integer
                   nullable: false
-    PackageSummary:
+    PackageBase:
       type: object
       required:
         - package_id
@@ -3563,10 +4455,6 @@ components:
           type: string
           nullable: false
           example: 12345abcde
-        stars:
-          type: integer
-          nullable: false
-          example: 3
         display_name:
           type: string
           nullable: false
@@ -3594,9 +4482,21 @@ components:
         signed:
           type: boolean
           nullable: false
+          example: false
+        signatures:
+          type: array
+          items:
+            type: string
+            enum:
+              - prov
+              - cosign
+            nullable: false
         official:
           type: boolean
           nullable: false
+        cncf:
+          type: boolean
+          nullable: true
         ts:
           type: integer
           nullable: false
@@ -3618,16 +4518,49 @@ components:
             low:
               type: number
               nullable: false
-            unkown:
+            unknown:
               type: number
               nullable: false
         all_containers_images_whitelisted:
           type: boolean
           nullable: false
           example: false
-        offical:
-          type: boolean
+        production_organizations_count:
+          type: number
           nullable: false
+    PackageCategoryId:
+      type: integer
+      enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+      nullable: false
+      description: |
+        Package category:
+          * `1` - AI / Machine learning
+          * `2` - Database
+          * `3` - Integration and delivery
+          * `4` - Monitoring and logging
+          * `5` - Networking
+          * `6` - Security
+          * `7` - Storage
+          * `8` - Streaming and messaging
+    PackageSummary:
+      allOf:
+        - $ref: "#/components/schemas/PackageBase"
+        - type: object
+          properties:
+            category:
+              $ref: "#/components/schemas/PackageCategoryId"
+            stars:
+              type: integer
+              nullable: false
+              example: 3
     Repository:
       allOf:
         - $ref: "#/components/schemas/RepositorySummary"
@@ -3661,6 +4594,24 @@ components:
             branch:
               type: string
               nullable: false
+            data:
+              type: object
+              nullable: false
+              properties:
+                tags:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - name
+                    properties:
+                      name:
+                        type: string
+                        nullable: false
+                        example: stable
+                      mutable:
+                        type: boolean
+                        nullable: false
     RepositoryKind:
       type: integer
       enum:
@@ -3674,6 +4625,13 @@ components:
         - 7
         - 8
         - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+        - 16
       description: |
         Repository kind:
           * `0` - Helm charts
@@ -3688,6 +4646,14 @@ components:
           * `9` - Core DNS plugins
           * `10` - Keptn integrations
           * `11` - Tekton pipelines
+          * `12` - Container images
+          * `13` - Kubewarden policies
+          * `14` - Gatekeeper policies
+          * `15` - Kyverno policies
+          * `16` - Knative client plugins
+          * `17` - Backstage plugins
+          * `18` - Argo templates
+          * `19` - KubeArmor templates
     RepositoryKindParam:
       type: string
       enum:
@@ -3703,6 +4669,14 @@ components:
         - coredns
         - keptn
         - tekton-pipeline
+        - container
+        - kubewarden
+        - gatekeeper
+        - kyverno
+        - knative-client-plugin
+        - backstage
+        - argo-template
+        - kubearmor
       description: |
         Repository kind name:
         * `helm` - Helm charts
@@ -3717,6 +4691,14 @@ components:
         * `coredns` - Core DNS plugins
         * `keptn` - Keptn integrations
         * `tekton-pipeline` - Tekton pipelines
+        * `container` - Container images
+        * `kubewarden` - Kubewarden policies
+        * `gatekeeper` - Gatekeeper policies
+        * `kyverno` - Kyverno policies
+        * `knative-client-plugin` - Knative client plugins
+        * `backstage` - Backstage plugins
+        * `argo-template` - Argo templates
+        * `kubearmor` - KubeArmor policies
     RepositorySummary:
       type: object
       required:
@@ -3752,6 +4734,9 @@ components:
         official:
           type: boolean
           nullable: false
+        cncf:
+          type: boolean
+          nullable: true
         private:
           type: boolean
           nullable: false
@@ -3786,19 +4771,6 @@ components:
             confirmed:
               type: boolean
               nullable: false
-    ResourceKindName:
-      type: string
-      enum:
-        - repositoryName
-        - repositoryURL
-        - organizationName
-        - userAlias
-      description: |
-        Resource kind name:
-          * `repositoryName` - Repository name
-          * `repositoryURL` - Repository URL
-          * `organizationName` - Organization name
-          * `userAlias` - User alias
     OrganizationSummary:
       type: object
       required:
@@ -3825,6 +4797,44 @@ components:
           type: string
           nullable: false
           example: 12345abcde
+    ProductionUsageOrganization:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          nullable: false
+          example: org1
+        display_name:
+          type: string
+          nullable: false
+          example: Organization 1
+        home_url:
+          type: string
+          format: uri
+          nullable: false
+          example: "http://url"
+        logo_image_id:
+          type: string
+          nullable: false
+          example: 12345abcde
+        used_in_production:
+          type: boolean
+          nullable: false
+    ResourceKindName:
+      type: string
+      enum:
+        - repositoryName
+        - repositoryURL
+        - organizationName
+        - userAlias
+      description: |
+        Resource kind name:
+          * `repositoryName` - Repository name
+          * `repositoryURL` - Repository URL
+          * `organizationName` - Organization name
+          * `userAlias` - User alias
     User:
       type: object
       required:
@@ -4063,13 +5073,20 @@ components:
         type: boolean
       required: false
       description: Whether to get only verified publisher
+    CNCFParam:
+      in: query
+      name: cncf
+      schema:
+        type: boolean
+      required: false
+      description: Whether to get only pacakges published by CNCF projects
     OfficialParam:
       in: query
       name: official
       schema:
         type: boolean
       required: false
-      description: Whether to get only official repositoties
+      description: Whether to get only official repositories
     SortParam:
       in: query
       name: sort
@@ -4140,6 +5157,33 @@ components:
           - org2
       required: false
       description: List of organization names
+    PackageCategoryListParam:
+      in: query
+      name: category
+      schema:
+        type: array
+        items:
+          type: integer
+          enum:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+      required: false
+      description: |
+        Package category:
+          * `1` - AI / Machine learning
+          * `2` - Database
+          * `3` - Integration and delivery
+          * `4` - Monitoring and logging
+          * `5` - Networking
+          * `6` - Security
+          * `7` - Storage
+          * `8` - Streaming and messaging
     PackageIDParam:
       in: path
       name: packageID
@@ -4186,6 +5230,14 @@ components:
           * `9` - Core DNS plugins
           * `10` - Keptn integrations
           * `11` - Tekton pipelines
+          * `12` - Container images
+          * `13` - Kubewarden policies
+          * `14` - Gatekeeper policies
+          * `15` - Kyverno policies
+          * `16` - Knative client plugins
+          * `17` - Backstage plugins
+          * `18` - Argo templates
+          * `19` - KubeArmor templates
     PackageNameParam:
       in: path
       name: packageName
@@ -4244,6 +5296,14 @@ components:
         by the PostgreSQL websearch_to_tsquery function. See
         https://www.postgresql.org/docs/current/textsearch-controls.html
         (12.3.2. Parsing Queries) for more details.
+    UrlQueryParam:
+      in: query
+      name: url
+      schema:
+        type: string
+        example: https://repo2.com
+      required: false
+      description: Repository url
     UsersListParam:
       in: query
       name: user
